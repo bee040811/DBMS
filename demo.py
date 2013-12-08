@@ -1,12 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+"""
+    this file is to parse DBpedia data by area to get label and capital
+"""
 from SPARQLWrapper import SPARQLWrapper, JSON, XML, N3, RDF
 import sys
 import json
 
 def main(argv):
-    print sys.argv
+    
+#    print sys.argv
     sparql = SPARQLWrapper("http://dbpedia.org/sparql")
     sparql.setQuery("""
     SELECT ?label ,?capital
