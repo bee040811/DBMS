@@ -38,7 +38,7 @@ def main(argv):
                         if (result[index]['xml:lang']=="zh") :
                             data[index] = {}
                             data[index]['value'] = result[index]['value']
-                    elif (index == 'label' or index == "coordinate"):
+                    elif (index == 'label' or index == "coordinate" or index == "capital"):
                         data[index] = {}
                         data[index]['value'] = result[index]['value']
         print json.dumps(data,ensure_ascii=False , encoding='utf-8')
