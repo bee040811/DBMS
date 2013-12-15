@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
+# -*- encoding: utf-8 -*-
 
 """
     this file is to parse DBpedia data by area to get label and capital
@@ -13,8 +13,12 @@ def main(argv):
 #    print sys.argv
     sparql = SPARQLWrapper("http://dbpedia.org/sparql")
     sparql.setQuery("""
-    SELECT ?label ,?capital
-    WHERE { <http://dbpedia.org/resource/%s> rdfs:label ?label;
+    SELECT ?label ,?capital ,?abstract, ?coordinate
+    WHERE { 
+            <http://dbpedia.org/resource/%s> 
+            rdfs:label ?label;
+            dbpedia-owl:abstract ?abstract;
+            grs:point ?coordinate;
             dbpedia-owl:capital ?capital
     }
     """ % sys.argv[1])
@@ -25,7 +29,19 @@ def main(argv):
         print '\n\n*** JSON Example'
         sparql.setReturnFormat(JSON)
         results = sparql.query().convert()
-        print json.dumps(results)
+        results = json.loads(json.dumps(results,ensure_ascii=False ,encoding='utf-8'))
+        data = {}
+        for result in results['results']['bindings']:
+            for index in result:
+                if (index not in data):
+                    if(index == 'abstract'):
+                        if (result[index]['xml:lang']=="zh") :
+                            data[index] = {}
+                            data[index]['value'] = result[index]['value']
+                    elif (index == 'label' or index == "coordinate"):
+                        data[index] = {}
+                        data[index]['value'] = result[index]['value']
+        print json.dumps(data,ensure_ascii=False , encoding='utf-8')
         """
         for result in results["results"]["bindings"]:
             print result["label"]["value"]
@@ -55,5 +71,5 @@ if __name__ == "__main__":
         print "please input demo.py 'place' 'convertType'\n"
         print "'place' ex: Chine (first name bigger) \n"
         print "'convertType' ex: json,xml,n3,rdf\n"
-    else:    
+    elif(len(sys.argv) == 3):    
         main(sys.argv)
